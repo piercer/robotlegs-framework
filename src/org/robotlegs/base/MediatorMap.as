@@ -301,7 +301,8 @@ package org.robotlegs.base
 		
 		private function getMappingConfig(viewComponent:Object):MappingConfig
 		{
-			var config:MappingConfig = mappingConfigByViewClassName[getQualifiedClassName(viewComponent)];
+			var className:String = getQualifiedClassName(viewComponent);
+			var config:MappingConfig = mappingConfigByViewClassName[className];
 			if (!config)
 			{
 				var classXML:XML = describeType(viewComponent);
@@ -311,6 +312,7 @@ package org.robotlegs.base
 					config=mappingConfigByViewClassName[interfaceName];
 					if (config)
 					{
+						mappingConfigByViewClassName[className]=config;
 						break;
 					}
 				}
