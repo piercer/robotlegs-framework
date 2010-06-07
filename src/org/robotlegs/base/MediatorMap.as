@@ -53,6 +53,11 @@ package org.robotlegs.base
 		/**
 		 * @private
 		 */
+		protected var unmappedViews:Dictionary;
+		
+		/**
+		 * @private
+		 */
 		protected var hasMediatorsMarkedForRemoval:Boolean;
 		
 		/**
@@ -82,6 +87,7 @@ package org.robotlegs.base
 			this.mappingConfigByView = new Dictionary(true);
 			this.mappingConfigByViewClassName = new Dictionary(false);
 			this.mediatorsMarkedForRemoval = new Dictionary(false);
+			this.unmappedViews = new Dictionary(false);
 		}
 		
 		//---------------------------------------------------------------------
@@ -302,6 +308,10 @@ package org.robotlegs.base
 		private function getMappingConfig(viewComponent:Object):MappingConfig
 		{
 			var className:String = getQualifiedClassName(viewComponent);
+			if (unmappedViews[className])
+			{
+				return null;
+			}
 			var config:MappingConfig = mappingConfigByViewClassName[className];
 			if (!config)
 			{
@@ -316,6 +326,10 @@ package org.robotlegs.base
 						break;
 					}
 				}
+			}
+			if (!config)
+			{
+				unmappedViews[className]=1;
 			}
 			return config;
 		}
