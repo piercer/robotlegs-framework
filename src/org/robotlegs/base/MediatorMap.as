@@ -108,6 +108,7 @@ package org.robotlegs.base
 			{
 				throw new ContextError(ContextError.E_MEDIATORMAP_NOIMPL + ' - ' + mediatorClass);
 			}
+			unmappedViews = new Dictionary(false);
 			var config:MappingConfig = new MappingConfig();
 			config.mediatorClass = mediatorClass;
 			config.autoCreate = autoCreate;
@@ -135,6 +136,7 @@ package org.robotlegs.base
 		{
 			var viewClassName:String = reflector.getFQCN(viewClassOrName); 
 			delete mappingConfigByViewClassName[viewClassName];
+			unmappedViews = new Dictionary(false);
 		}
 		
 		/**
@@ -315,16 +317,16 @@ package org.robotlegs.base
 			var config:MappingConfig = mappingConfigByViewClassName[className];
 			if (!config)
 			{
+				// This stuff should be handled by the Reflector
 				var classXML:XML = describeType(viewComponent);
 				for each (var implementedInterface:XML in classXML.implementsInterface)
 				{
 					var interfaceName:String = implementedInterface.@type;
-					config=mappingConfigByViewClassName[interfaceName];
+					config = mappingConfigByViewClassName[interfaceName];
+					// We can't cache the config by throwing into mappingConfigByViewClassName
+					// as there is no way to invalidate that action
 					if (config)
-					{
-						mappingConfigByViewClassName[className]=config;
-						break;
-					}
+						return config;
 				}
 			}
 			if (!config)
